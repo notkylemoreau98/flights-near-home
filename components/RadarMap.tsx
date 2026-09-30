@@ -216,7 +216,7 @@ export default function RadarMap({ home, radiusMi, onRadiusChange, flights, sele
           </div>
           <div className="scale">
             <span className="scale__bar" style={{ width: (radiusMi / 3) * pxPerMi }} />
-            <span>{fmtMi(radiusMi / 3)} · © OpenSky Network · {TILE_ATTRIBUTION}</span>
+            <span>{fmtMi(radiusMi / 3)} · adsb.lol (ODbL) · {TILE_ATTRIBUTION}</span>
           </div>
           {status && <div className="map-status">{status}</div>}
         </>

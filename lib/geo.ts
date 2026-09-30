@@ -9,13 +9,6 @@ export function haversineMi(lat1: number, lon1: number, lat2: number, lon2: numb
   return 2 * EARTH_RADIUS_MI * Math.asin(Math.sqrt(a));
 }
 
-/** Bounding box that contains a circle of `radiusMi` around a point. */
-export function boundingBox(lat: number, lon: number, radiusMi: number) {
-  const dLat = radiusMi / 69.0;
-  const dLon = radiusMi / (69.172 * Math.cos(toRad(lat)));
-  return { lamin: lat - dLat, lamax: lat + dLat, lomin: lon - dLon, lomax: lon + dLon };
-}
-
 /**
  * Offset of a point from home in miles (x = east, y = north). Equirectangular,
  * which is accurate enough over a ~15 mile radius.

@@ -2,7 +2,7 @@ import "server-only";
 import type { Airport, Route } from "./types";
 
 /**
- * OpenSky's live state vectors don't say where a flight is going, so we look
+ * Live ADS-B positions don't say where a flight is going, so we look
  * the callsign up in adsbdb (free, no key): https://www.adsbdb.com
  * Results (including misses) are cached in memory for 12 hours.
  */

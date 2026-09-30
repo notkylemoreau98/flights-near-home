@@ -1,6 +1,6 @@
 # Flights Near Home
 
-Single-page Next.js (App Router) + TypeScript app that shows live aircraft within a radius of the user's home, using the OpenSky Network API.
+Single-page Next.js (App Router) + TypeScript app that shows live aircraft within a radius of the user's home, using live ADS-B data from adsb.lol. Deployed on Vercel.
 
 ## Commands
 - `npm run dev` — dev server on http://localhost:3000
@@ -11,12 +11,13 @@ Single-page Next.js (App Router) + TypeScript app that shows live aircraft withi
 - `app/page.tsx` → `components/FlightTracker.tsx` (client) owns UI state: `selectedId` (pinned flight, by `icao24`) and `hoverId`.
 - `hooks/useHome.ts` — home address + lat/lon, persisted in localStorage; defaults from `NEXT_PUBLIC_HOME_*`.
 - `hooks/useFlights.ts` — polls `/api/flights` every 15s (slower when the tab is hidden).
-- `app/api/flights/route.ts` — server proxy: OpenSky `/states/all` for the bounding box → filter to airborne aircraft inside the radius → enrich with route info → `Flight[]` sorted nearest first. Caches OpenSky results (30s with credentials, 180s anonymous) and serves stale data on errors/429s.
+- `app/api/flights/route.ts` — server proxy: adsb.lol `/v2/point` for the radius → filter to airborne aircraft inside the radius → enrich with route info → `Flight[]` sorted nearest first. Caches adsb.lol results for 15s and serves stale data on errors/429s.
 - `app/api/geocode/route.ts` — address → lat/lon via Nominatim (needs `NOMINATIM_USER_AGENT`).
-- `lib/opensky.ts` — OpenSky client with OAuth2 client-credentials token caching. State vector field indexes are documented at https://openskynetwork.github.io/opensky-api/rest.html
-- `lib/routes.ts` — callsign → airline + origin/destination via adsbdb (`https://api.adsbdb.com/v0/callsign/{callsign}`), cached 12h in memory. OpenSky live data has no origin/destination, which is why this exists.
+- `lib/adsb.ts` — adsb.lol client (no key). Response is readsb `aircraft.json` format (ft, kt, ft/min; `alt_baro: "ground"` when on the ground). Docs: https://api.adsb.lol/docs
+- `lib/routes.ts` — callsign → airline + origin/destination via adsbdb (`https://api.adsbdb.com/v0/callsign/{callsign}`), cached 12h in memory. Live ADS-B data has no origin/destination, which is why this exists.
+- `lib/tiles.ts` — Esri World Dark Gray raster tiles (base + labels, keyless) laid out at the radar's scale.
 - `lib/airlines.ts` — ICAO prefix → IATA/name/badge color fallback table.
-- `components/RadarMap.tsx` — stylized radar map (no map tiles). Positions are projected equirectangularly around home (`lib/geo.ts#offsetMi`) and scaled so the radius fits the panel.
+- `components/RadarMap.tsx` — radar map over dimmed street tiles. Positions are projected equirectangularly around home (`lib/geo.ts#offsetMi`) and scaled so the radius fits the panel.
 - `components/FlightList.tsx` — scrollable list; pinned flight first, then nearest.
 
 ## Behavior that must hold
@@ -31,7 +32,8 @@ Single-page Next.js (App Router) + TypeScript app that shows live aircraft withi
 - Touch targets ≥ 44px, real `<button>`s, visible `:focus-visible` rings.
 
 ## External API limits
-- OpenSky: daily credit budget (anonymous is small; an API client gets more). Don't poll OpenSky directly from the browser and don't lower the server cache TTL without checking the budget.
+- adsb.lol: free and volunteer-run; rate limits are dynamic. Don't poll it directly from the browser or lower the 15s server cache.
+- Don't switch back to OpenSky: it blocks cloud/hosting IPs (including Vercel), even with OAuth credentials.
 - Nominatim: ≤ 1 request/second, identifying User-Agent required.
 - Airline logos load from `https://pics.avs.io/88/88/{IATA}.png` and fall back to a colored code tile.
 

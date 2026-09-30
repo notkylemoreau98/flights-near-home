@@ -1,6 +1,6 @@
 # Flights Near Home
 
-Live flights over your house, on one page. Next.js 16 + TypeScript, data from the [OpenSky Network](https://opensky-network.org).
+Live flights over your house, on one page. Next.js 16 + TypeScript, live aircraft from [adsb.lol](https://adsb.lol) (free, no key, ODbL).
 
 ## Run it
 
@@ -13,7 +13,6 @@ npm run dev                  # http://localhost:3000
 ### `.env.local`
 | Variable | Needed? | What it's for |
 | --- | --- | --- |
-| `OPENSKY_CLIENT_ID` / `OPENSKY_CLIENT_SECRET` | Recommended | Create a free account at opensky-network.org, then Account → API Client. Without it you get a small anonymous budget and data refreshes every ~3 min instead of ~30s. |
 | `NOMINATIM_USER_AGENT` | Yes | Put your app name + email; required by OpenStreetMap's geocoder. |
 | `NEXT_PUBLIC_HOME_ADDRESS`, `_LAT`, `_LON` | Optional | Starting location before you edit the address in the app. |
 | `NEXT_PUBLIC_RADIUS_MI` | Optional | Search radius (default 15). |
@@ -31,5 +30,6 @@ Ideas for next steps to ask for:
 - Filters (hide small/private aircraft, altitude range).
 
 ## Notes
-- OpenSky's live feed has no origin/destination, so routes come from [adsbdb](https://www.adsbdb.com). Some flights (private, cargo, new routes) will show "—".
+- Live ADS-B positions have no origin/destination, so routes come from [adsbdb](https://www.adsbdb.com). Some flights (private, cargo, new routes) will show "—".
+- Why not OpenSky: it blocks requests from cloud/hosting IPs (Vercel, AWS…), so it only works when run locally.
 - Everything external is called from the server routes in `app/api/`, so keys never reach the browser.

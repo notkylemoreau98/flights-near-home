@@ -41,7 +41,7 @@ export interface Flight {
 
 export interface FlightsResponse {
   flights: Flight[];
-  fetchedAt: number; // unix ms when OpenSky data was fetched
+  fetchedAt: number; // unix ms when live aircraft data was fetched
   stale: boolean; // true when serving cache after an upstream error / rate limit
   error?: string;
 }

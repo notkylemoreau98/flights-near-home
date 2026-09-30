@@ -8,7 +8,7 @@ const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500", "600
 
 export const metadata: Metadata = {
   title: "Flights Near Home",
-  description: "Live flights overhead, from the OpenSky Network.",
+  description: "Live flights overhead, from adsb.lol.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
