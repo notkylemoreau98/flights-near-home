@@ -8,6 +8,8 @@ export interface Airport {
   iata: string | null;
   icao: string | null;
   city: string | null;
+  lat: number | null;
+  lon: number | null;
   name: string | null;
 }
 

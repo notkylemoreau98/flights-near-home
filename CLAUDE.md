@@ -14,7 +14,7 @@ Single-page Next.js (App Router) + TypeScript app that shows live aircraft withi
 - `app/api/flights/route.ts` — server proxy: adsb.lol `/v2/point` for the radius → filter to airborne aircraft inside the radius → enrich with route info → `Flight[]` sorted nearest first. Caches adsb.lol results for 15s and serves stale data on errors/429s.
 - `app/api/geocode/route.ts` — address → lat/lon via Nominatim (needs `NOMINATIM_USER_AGENT`).
 - `lib/adsb.ts` — adsb.lol client (no key). Response is readsb `aircraft.json` format (ft, kt, ft/min; `alt_baro: "ground"` when on the ground). Docs: https://api.adsb.lol/docs
-- `lib/routes.ts` — callsign → airline + origin/destination via adsbdb (`https://api.adsbdb.com/v0/callsign/{callsign}`), cached 12h in memory. Live ADS-B data has no origin/destination, which is why this exists.
+- `lib/routes.ts` — callsign → airline + origin/destination via adsbdb (`https://api.adsbdb.com/v0/callsign/{callsign}`), cached 12h in memory. Live ADS-B data has no origin/destination, which is why this exists. adsbdb matches on callsign only, so its route can be stale (NetJets, charters, reused flight numbers); `routeFits` in the flights route removes any flight whose route it isn't plausibly flying (near an endpoint, or on the great-circle path between them); flights with no route at all are still shown.
 - `lib/tiles.ts` — Esri World Dark Gray raster tiles (base + labels, keyless) laid out at the radar's scale.
 - `lib/airlines.ts` — ICAO prefix → IATA/name/badge color fallback table.
 - `components/RadarMap.tsx` — radar map over dimmed street tiles. Positions are projected equirectangularly around home (`lib/geo.ts#offsetMi`) and scaled so the radius fits the panel.

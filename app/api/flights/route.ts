@@ -1,13 +1,32 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { AdsbError, getAircraft, type Aircraft } from "@/lib/adsb";
 import { airlineFromCallsign, displayFlightNumber } from "@/lib/airlines";
-import { haversineMi } from "@/lib/geo";
+import { haversineMi, pathPosition } from "@/lib/geo";
 import { lookupRoute } from "@/lib/routes";
 import type { Flight, FlightsResponse, Route } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 const MAX_RADIUS_MI = 50;
+
+// adsbdb looks routes up by callsign only, and some operators (NetJets, charters, GA)
+// reuse callsigns on different routes, so the stored route can be days old and
+// unrelated. A flight is shown only if the plane is plausibly flying its route.
+const NEAR_AIRPORT_MI = 75; // climbing out of / descending into an endpoint
+const MIN_CORRIDOR_MI = 50;
+const MAX_CORRIDOR_MI = 150;
+
+function routeFits(lat: number, lon: number, route: Route): boolean {
+  const { origin: a, destination: b } = route;
+  if (a?.lat == null || a.lon == null || b?.lat == null || b.lon == null) return false;
+  const here = { lat, lon };
+  if (haversineMi(lat, lon, a.lat, a.lon) <= NEAR_AIRPORT_MI || haversineMi(lat, lon, b.lat, b.lon) <= NEAR_AIRPORT_MI) {
+    return true;
+  }
+  const { crossTrack, alongTrack, length } = pathPosition(here, { lat: a.lat, lon: a.lon }, { lat: b.lat, lon: b.lon });
+  const corridor = Math.min(MAX_CORRIDOR_MI, Math.max(MIN_CORRIDOR_MI, length * 0.1));
+  return crossTrack <= corridor && alongTrack >= 0 && alongTrack <= length;
+}
 
 // adsb.lol is free and volunteer-run (rate limits are dynamic, based on load), so
 // upstream results are cached briefly and shared by every tab hitting this instance.
@@ -67,27 +86,33 @@ export async function GET(req: NextRequest) {
 
   const routes = await mapPool(airborne, 6, ({ a }) => lookupRoute(a.callsign));
 
-  const flights: Flight[] = airborne.map(({ a, distanceMi }, i) => {
+  // A route that doesn't match the plane's position means adsbdb's data for this
+  // callsign is wrong, so the whole flight is left out rather than shown half-known.
+  // Aircraft with no route at all (private/GA) are still shown.
+  const flights: Flight[] = airborne.flatMap(({ a, distanceMi }, i): Flight[] => {
     const route: Route | null = routes[i];
+    if (route && !routeFits(a.lat!, a.lon!, route)) return [];
     const fallback = airlineFromCallsign(a.callsign);
     const fallbackId = a.registration ?? a.icao24.toUpperCase();
-    return {
-      icao24: a.icao24,
-      callsign: a.callsign || fallbackId,
-      flightNumber: a.callsign ? displayFlightNumber(a.callsign, route?.flightNumber) : fallbackId,
-      airlineName: route?.airlineName ?? fallback?.name ?? null,
-      airlineIata: route?.airlineIata ?? fallback?.iata ?? null,
-      lat: a.lat!,
-      lon: a.lon!,
-      altitudeFt: a.altitudeFt === null ? null : Math.round(a.altitudeFt),
-      speedKt: a.speedKt === null ? null : Math.round(a.speedKt),
-      headingDeg: Math.round(a.trackDeg ?? 0),
-      verticalRateFpm: a.verticalRateFpm === null ? null : Math.round(a.verticalRateFpm),
-      distanceMi,
-      origin: route?.origin ?? null,
-      destination: route?.destination ?? null,
-      lastContact: a.lastContact,
-    };
+    return [
+      {
+        icao24: a.icao24,
+        callsign: a.callsign || fallbackId,
+        flightNumber: a.callsign ? displayFlightNumber(a.callsign, route?.flightNumber) : fallbackId,
+        airlineName: route?.airlineName ?? fallback?.name ?? null,
+        airlineIata: route?.airlineIata ?? fallback?.iata ?? null,
+        lat: a.lat!,
+        lon: a.lon!,
+        altitudeFt: a.altitudeFt === null ? null : Math.round(a.altitudeFt),
+        speedKt: a.speedKt === null ? null : Math.round(a.speedKt),
+        headingDeg: Math.round(a.trackDeg ?? 0),
+        verticalRateFpm: a.verticalRateFpm === null ? null : Math.round(a.verticalRateFpm),
+        distanceMi,
+        origin: route?.origin ?? null,
+        destination: route?.destination ?? null,
+        lastContact: a.lastContact,
+      },
+    ];
   });
 
   const body: FlightsResponse = { flights, fetchedAt: entry.fetchedAt, stale, error };

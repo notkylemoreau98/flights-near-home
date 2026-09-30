@@ -14,6 +14,8 @@ interface AdsbdbAirport {
   iata_code?: string;
   icao_code?: string;
   municipality?: string;
+  latitude?: number;
+  longitude?: number;
   name?: string;
 }
 interface AdsbdbResponse {
@@ -31,7 +33,14 @@ interface AdsbdbResponse {
 
 const toAirport = (a?: AdsbdbAirport | null): Airport | null =>
   a
-    ? { iata: a.iata_code ?? null, icao: a.icao_code ?? null, city: a.municipality ?? null, name: a.name ?? null }
+    ? {
+        iata: a.iata_code ?? null,
+        icao: a.icao_code ?? null,
+        city: a.municipality ?? null,
+        name: a.name ?? null,
+        lat: a.latitude ?? null,
+        lon: a.longitude ?? null,
+      }
     : null;
 
 async function fetchRoute(callsign: string): Promise<Route | null> {
