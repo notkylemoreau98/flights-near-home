@@ -52,6 +52,25 @@ export const ChevronIcon = (p: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+export const PlusIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" {...stroke} {...p}>
+    <path d="M12 5v14M5 12h14" />
+  </svg>
+);
+
+export const MinusIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" {...stroke} {...p}>
+    <path d="M5 12h14" />
+  </svg>
+);
+
+export const CrosshairIcon = (p: SVGProps<SVGSVGElement>) => (
+  <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" {...stroke} {...p}>
+    <circle cx="12" cy="12" r="7" />
+    <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+  </svg>
+);
+
 export const CursorIcon = (p: SVGProps<SVGSVGElement>) => (
   <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" {...stroke} {...p}>
     <path d="M9 3l-6 18 7-4 4 7 3-2-4-7 8-1z" />

@@ -23,6 +23,7 @@ Single-page Next.js (App Router) + TypeScript app that shows live aircraft withi
 ## Behavior that must hold
 - Hovering a plane on the map (or a row) highlights both; the map shows a tooltip.
 - Clicking a plane or a row pins it: it moves to the top of the list, turns amber, and expands to show altitude/speed/heading. Clicking again unpins.
+- The map pans by dragging and zooms with the wheel/trackpad, pinch, or the +/− buttons; the crosshair button recenters on home. A drag that starts on a plane must not pin it. Changing home or radius resets the view.
 - "Edit address" opens an inline form (Enter saves, Esc cancels) that geocodes and recenters the map.
 
 ## Design rules (from the design canvas)

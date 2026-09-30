@@ -121,6 +121,21 @@ button { cursor: pointer; }
   position: relative; overflow: hidden; border-radius: var(--radius-lg);
   background: var(--map-bg); border: 1px solid var(--border);
 }
+.map { cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+.map:active { cursor: grabbing; }
+.map--moving .plane, .map--moving .trail { transition: none; }
+.map-zoom {
+  position: absolute; right: 26px; top: 88px; z-index: 40; display: flex; flex-direction: column;
+  border-radius: var(--radius-sm); background: var(--map-chip); border: 1px solid var(--border); overflow: hidden;
+}
+.map-zoom__btn {
+  width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  background: none; border: 0; color: var(--text-dim);
+}
+.map-zoom__btn + .map-zoom__btn { border-top: 1px solid var(--border); }
+.map-zoom__btn:hover:not(:disabled) { background: var(--control); color: var(--text); }
+.map-zoom__btn:disabled { opacity: 0.35; cursor: default; }
+.map-zoom__btn:focus-visible { outline-offset: -2px; }
 .map__svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 /* Gray street tiles take the navy's hue via luminosity blending, so the map stays navy. */
 .map__tiles { position: absolute; inset: 0; overflow: hidden; mix-blend-mode: luminosity; }
