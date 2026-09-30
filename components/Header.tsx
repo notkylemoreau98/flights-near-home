@@ -47,7 +47,7 @@ function LiveStatus({ fetchedAt, stale }: { fetchedAt: number | null; stale: boo
     return () => clearInterval(id);
   }, []);
   const ago = fetchedAt ? Math.max(0, Math.round((now - fetchedAt) / 1000)) : null;
-  const label = ago === null ? "Connecting…" : ago < 10 ? "Live · adsb.lol" : `Updated ${ago < 90 ? `${ago}s` : `${Math.round(ago / 60)}m`} ago`;
+  const label = ago === null ? "Connecting…" : ago < 10 ? "Live" : `Updated ${ago < 90 ? `${ago}s` : `${Math.round(ago / 60)}m`} ago`;
   return (
     <div className="stat stat--live" aria-live="polite">
       <span className={`live-dot${stale ? " live-dot--stale" : ""}`} />

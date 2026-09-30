@@ -3,8 +3,6 @@ import "server-only";
 /**
  * adsb.lol live aircraft client (server side only). Free, no key, open data (ODbL).
  * Docs: https://api.adsb.lol/docs — response is readsb's aircraft.json format.
- *
- * Replaces OpenSky, which blocks requests from cloud/hosting IPs (Vercel, AWS…).
  */
 const API = "https://api.adsb.lol/v2";
 const NM_PER_MI = 0.868976;

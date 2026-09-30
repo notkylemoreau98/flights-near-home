@@ -30,6 +30,4 @@ Ideas for next steps to ask for:
 - Filters (hide small/private aircraft, altitude range).
 
 ## Notes
-- Live ADS-B positions have no origin/destination, so routes come from [adsbdb](https://www.adsbdb.com). Some flights (private, cargo, new routes) will show "—".
-- Why not OpenSky: it blocks requests from cloud/hosting IPs (Vercel, AWS…), so it only works when run locally.
-- Everything external is called from the server routes in `app/api/`, so keys never reach the browser.
+- Live ADS-B positions have no origin/destination, so routes come from [adsbdb](https://www.adsbdb.com). Some flights (private, cargo, new routes) will show "—".- Everything external is called from the server routes in `app/api/`, so keys never reach the browser.
