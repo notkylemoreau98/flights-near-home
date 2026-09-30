@@ -3,11 +3,13 @@
 Single-page Next.js (App Router) + TypeScript app that shows live aircraft within a radius of the user's home, using live ADS-B data from adsb.lol. Deployed on Vercel.
 
 ## Commands
+
 - `npm run dev` — dev server on http://localhost:3000
 - `npm run typecheck` — `tsc --noEmit`
 - `npm run build` — production build (run before calling a change done)
 
 ## Architecture
+
 - `app/page.tsx` → `components/FlightTracker.tsx` (client) owns UI state: `selectedId` (pinned flight, by `icao24`) and `hoverId`.
 - `hooks/useHome.ts` — home address + lat/lon, persisted in localStorage; defaults from `NEXT_PUBLIC_HOME_*`.
 - `hooks/useFlights.ts` — polls `/api/flights` every 15s (slower when the tab is hidden).
@@ -21,18 +23,21 @@ Single-page Next.js (App Router) + TypeScript app that shows live aircraft withi
 - `components/FlightList.tsx` — scrollable list; pinned flight first, then nearest.
 
 ## Behavior that must hold
+
 - Hovering a plane on the map (or a row) highlights both; the map shows a tooltip.
 - Clicking a plane or a row pins it: it moves to the top of the list, turns amber, and expands to show altitude/speed/heading. Clicking again unpins.
 - The map pans by dragging and zooms with the wheel/trackpad, pinch, or the +/− buttons; the crosshair button recenters on home. A drag that starts on a plane must not pin it. Changing home or radius resets the view.
 - "Edit address" opens an inline form (Enter saves, Esc cancels) that geocodes and recenters the map.
 
 ## Design rules (from the design canvas)
+
 - All colors are CSS variables in `app/globals.css` `:root`. Use them; don't add raw hex in components.
 - Chrome is neutral charcoal (`--bg`, `--panel`, `--row`); navy is used **only** inside the map. Amber (`--amber`) marks home and the pinned flight only. Plane icons are `--sky`.
 - Fonts: Sora (display), IBM Plex Sans (body), IBM Plex Mono (flight numbers, figures) via `next/font/google`.
 - Touch targets ≥ 44px, real `<button>`s, visible `:focus-visible` rings.
 
 ## External API limits
+
 - adsb.lol: free and volunteer-run; rate limits are dynamic. Don't poll it directly from the browser or lower the 15s server cache.
 - Don't switch back to OpenSky: it blocks cloud/hosting IPs (including Vercel), even with OAuth credentials.
 - Nominatim: ≤ 1 request/second, identifying User-Agent required.

@@ -25,7 +25,10 @@ export default function FlightTracker() {
   const [hoverId, setHoverId] = useState<string | null>(null);
 
   const commercialCount = useMemo(() => allFlights.filter(isCommercial).length, [allFlights]);
-  const flights = useMemo(() => (filter === "commercial" ? allFlights.filter(isCommercial) : allFlights), [allFlights, filter]);
+  const flights = useMemo(
+    () => (filter === "commercial" ? allFlights.filter(isCommercial) : allFlights),
+    [allFlights, filter],
+  );
 
   const toggleSelect = (id: string) => setSelectedId((cur) => (cur === id ? null : id));
 

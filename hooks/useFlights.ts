@@ -14,7 +14,13 @@ interface State {
 }
 
 export function useFlights(home: Home, radiusMi: number): State {
-  const [state, setState] = useState<State>({ flights: [], fetchedAt: null, stale: false, error: null, loading: true });
+  const [state, setState] = useState<State>({
+    flights: [],
+    fetchedAt: null,
+    stale: false,
+    error: null,
+    loading: true,
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -24,8 +30,15 @@ export function useFlights(home: Home, radiusMi: number): State {
 
     const load = async () => {
       try {
-        const qs = new URLSearchParams({ lat: String(home.lat), lon: String(home.lon), radius: String(radiusMi) });
-        const res = await fetch(`/api/flights?${qs}`, { signal: controller.signal, cache: "no-store" });
+        const qs = new URLSearchParams({
+          lat: String(home.lat),
+          lon: String(home.lon),
+          radius: String(radiusMi),
+        });
+        const res = await fetch(`/api/flights?${qs}`, {
+          signal: controller.signal,
+          cache: "no-store",
+        });
         const data = (await res.json()) as FlightsResponse;
         if (cancelled) return;
         setState((s) => ({
@@ -36,7 +49,13 @@ export function useFlights(home: Home, radiusMi: number): State {
           loading: false,
         }));
       } catch {
-        if (!cancelled) setState((s) => ({ ...s, stale: true, error: "Connection lost — retrying…", loading: false }));
+        if (!cancelled)
+          setState((s) => ({
+            ...s,
+            stale: true,
+            error: "Connection lost — retrying…",
+            loading: false,
+          }));
       } finally {
         if (!cancelled) timer = setTimeout(load, document.hidden ? POLL_MS * 4 : POLL_MS);
       }

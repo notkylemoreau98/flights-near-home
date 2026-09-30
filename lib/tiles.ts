@@ -27,9 +27,19 @@ function worldPx(lat: number, lon: number, z: number) {
  * Street-map tiles laid out so the scale matches `pxPerMi` at home's latitude,
  * with home at (cx, cy). Positions are relative to the map container.
  */
-export function tilesFor(lat: number, lon: number, pxPerMi: number, cx: number, cy: number, w: number, h: number): MapTile[] {
+export function tilesFor(
+  lat: number,
+  lon: number,
+  pxPerMi: number,
+  cx: number,
+  cy: number,
+  w: number,
+  h: number,
+): MapTile[] {
   if (pxPerMi <= 0 || w <= 0 || h <= 0) return [];
-  const exactZ = Math.log2((pxPerMi * EARTH_CIRCUMFERENCE_MI * Math.cos((lat * Math.PI) / 180)) / TILE);
+  const exactZ = Math.log2(
+    (pxPerMi * EARTH_CIRCUMFERENCE_MI * Math.cos((lat * Math.PI) / 180)) / TILE,
+  );
   const z = Math.min(MAX_ZOOM, Math.max(1, Math.round(exactZ)));
   const k = 2 ** (exactZ - z); // css px per native tile px
   const size = TILE * k;

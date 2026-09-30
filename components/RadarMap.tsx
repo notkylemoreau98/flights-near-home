@@ -1,10 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent, type PointerEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent,
+  type PointerEvent,
+} from "react";
 import { offsetMi } from "@/lib/geo";
 import { TILE_ATTRIBUTION, tilesFor } from "@/lib/tiles";
 import type { Flight, Home } from "@/lib/types";
-import { ArrowRightIcon, ChevronIcon, CrosshairIcon, CursorIcon, HomeIcon, MinusIcon, PlaneIcon, PlusIcon, RadarIcon } from "./icons";
+import {
+  ArrowRightIcon,
+  ChevronIcon,
+  CrosshairIcon,
+  CursorIcon,
+  HomeIcon,
+  MinusIcon,
+  PlaneIcon,
+  PlusIcon,
+  RadarIcon,
+} from "./icons";
 
 interface Props {
   home: Home;
@@ -32,7 +50,8 @@ const SCALE_STEPS_MI = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100];
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 
 /** Largest round distance whose scale bar fits in ~120px. */
-const scaleMi = (pxPerMi: number) => [...SCALE_STEPS_MI].reverse().find((mi) => mi * pxPerMi <= 120) ?? SCALE_STEPS_MI[0];
+const scaleMi = (pxPerMi: number) =>
+  [...SCALE_STEPS_MI].reverse().find((mi) => mi * pxPerMi <= 120) ?? SCALE_STEPS_MI[0];
 
 function useSize<T extends HTMLElement>() {
   const ref = useRef<T>(null);
@@ -40,14 +59,26 @@ function useSize<T extends HTMLElement>() {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const ro = new ResizeObserver(([entry]) => setSize({ w: entry.contentRect.width, h: entry.contentRect.height }));
+    const ro = new ResizeObserver(([entry]) =>
+      setSize({ w: entry.contentRect.width, h: entry.contentRect.height }),
+    );
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
   return [ref, size] as const;
 }
 
-export default function RadarMap({ home, radiusMi, onRadiusChange, flights, selectedId, hoverId, onSelect, onHover, status }: Props) {
+export default function RadarMap({
+  home,
+  radiusMi,
+  onRadiusChange,
+  flights,
+  selectedId,
+  hoverId,
+  onSelect,
+  onHover,
+  status,
+}: Props) {
   const [ref, { w, h }] = useSize<HTMLElement>();
   const [menuOpen, setMenuOpen] = useState(false);
   const [view, setView] = useState(HOME_VIEW);
@@ -67,7 +98,10 @@ export default function RadarMap({ home, radiusMi, onRadiusChange, flights, sele
   const ringMi = [radiusMi / 3, (radiusMi * 2) / 3, radiusMi];
   const fmtMi = (mi: number) => `${Number.isInteger(mi) ? mi : mi.toFixed(1)}MI`;
   const barMi = scaleMi(pxPerMi);
-  const tiles = useMemo(() => tilesFor(home.lat, home.lon, pxPerMi, hx, hy, w, h), [home.lat, home.lon, pxPerMi, hx, hy, w, h]);
+  const tiles = useMemo(
+    () => tilesFor(home.lat, home.lon, pxPerMi, hx, hy, w, h),
+    [home.lat, home.lon, pxPerMi, hx, hy, w, h],
+  );
   const atHome = view.k === 1 && view.x === 0 && view.y === 0;
 
   // A new home or radius starts from the default view.
@@ -106,7 +140,11 @@ export default function RadarMap({ home, radiusMi, onRadiusChange, flights, sele
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       const r = el.getBoundingClientRect();
-      zoomAt(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.002)), e.clientX - r.left, e.clientY - r.top);
+      zoomAt(
+        Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.002)),
+        e.clientX - r.left,
+        e.clientY - r.top,
+      );
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
@@ -186,13 +224,25 @@ export default function RadarMap({ home, radiusMi, onRadiusChange, flights, sele
           <div className="map__tiles" aria-hidden="true">
             {tiles.map((t) => (
               // eslint-disable-next-line @next/next/no-img-element
-              <img key={t.key} src={t.src} alt="" draggable={false} style={{ left: t.left, top: t.top, width: t.size, height: t.size }} />
+              <img
+                key={t.key}
+                src={t.src}
+                alt=""
+                draggable={false}
+                style={{ left: t.left, top: t.top, width: t.size, height: t.size }}
+              />
             ))}
           </div>
           <div className="map__tiles map__tiles--labels" aria-hidden="true">
             {tiles.map((t) => (
               // eslint-disable-next-line @next/next/no-img-element
-              <img key={t.key} src={t.labelSrc} alt="" draggable={false} style={{ left: t.left, top: t.top, width: t.size, height: t.size }} />
+              <img
+                key={t.key}
+                src={t.labelSrc}
+                alt=""
+                draggable={false}
+                style={{ left: t.left, top: t.top, width: t.size, height: t.size }}
+              />
             ))}
           </div>
           <svg className="map__svg" width={w} height={h} aria-hidden="true">
@@ -200,7 +250,13 @@ export default function RadarMap({ home, radiusMi, onRadiusChange, flights, sele
               <pattern id="map-grid" width="24" height="24" patternUnits="userSpaceOnUse">
                 <path d="M24 0H0V24" fill="none" stroke="var(--map-grid)" />
               </pattern>
-              <radialGradient id="map-glow" cx={hx} cy={hy} r={radiusPx * 1.3} gradientUnits="userSpaceOnUse">
+              <radialGradient
+                id="map-glow"
+                cx={hx}
+                cy={hy}
+                r={radiusPx * 1.3}
+                gradientUnits="userSpaceOnUse"
+              >
                 <stop offset="0" stopColor="var(--map-glow)" stopOpacity="0.9" />
                 <stop offset="1" stopColor="var(--map-bg)" stopOpacity="0" />
               </radialGradient>
@@ -217,7 +273,10 @@ export default function RadarMap({ home, radiusMi, onRadiusChange, flights, sele
                   strokeDasharray={i === 0 ? undefined : "2 5"}
                 />
               ))}
-              <path d={`M${hx} ${hy - radiusPx}V${hy + radiusPx}M${hx - radiusPx} ${hy}H${hx + radiusPx}`} strokeOpacity="0.35" />
+              <path
+                d={`M${hx} ${hy - radiusPx}V${hy + radiusPx}M${hx - radiusPx} ${hy}H${hx + radiusPx}`}
+                strokeOpacity="0.35"
+              />
             </g>
             <g fontFamily="var(--font-mono)" fontSize="10" letterSpacing="1">
               {ringMi.map((mi, i) => {
@@ -243,7 +302,12 @@ export default function RadarMap({ home, radiusMi, onRadiusChange, flights, sele
               <div
                 key={`t-${f.icao24}`}
                 className={`trail${sel ? " trail--selected" : ""}`}
-                style={{ left: x, top: y, width: 40 + Math.round((f.speedKt ?? 0) / 5), transform: `rotate(${f.headingDeg + 90}deg)` }}
+                style={{
+                  left: x,
+                  top: y,
+                  width: 40 + Math.round((f.speedKt ?? 0) / 5),
+                  transform: `rotate(${f.headingDeg + 90}deg)`,
+                }}
               />
             );
           })}
@@ -276,12 +340,17 @@ export default function RadarMap({ home, radiusMi, onRadiusChange, flights, sele
                   onBlur={() => onHover(null)}
                 >
                   <span className="plane__halo">
-                    <PlaneIcon className="plane__icon" style={{ transform: `rotate(${f.headingDeg}deg)` }} />
+                    <PlaneIcon
+                      className="plane__icon"
+                      style={{ transform: `rotate(${f.headingDeg}deg)` }}
+                    />
                   </span>
                   <span className="plane__tag">
                     <span className="plane__callsign">{f.callsign}</span>
                     <span className="plane__alt">
-                      {f.altitudeFt === null ? "—" : `FL${String(Math.round(f.altitudeFt / 100)).padStart(3, "0")}`}
+                      {f.altitudeFt === null
+                        ? "—"
+                        : `FL${String(Math.round(f.altitudeFt / 100)).padStart(3, "0")}`}
                     </span>
                   </span>
                 </button>
@@ -289,7 +358,9 @@ export default function RadarMap({ home, radiusMi, onRadiusChange, flights, sele
                   <div className="tooltip" role="tooltip">
                     <div className="tooltip__top">
                       <span>{f.airlineName ?? "Unknown airline"}</span>
-                      <span style={{ fontFamily: "var(--font-mono)" }}>{f.distanceMi.toFixed(1)} mi away</span>
+                      <span style={{ fontFamily: "var(--font-mono)" }}>
+                        {f.distanceMi.toFixed(1)} mi away
+                      </span>
                     </div>
                     <div className="tooltip__route">
                       <span>{from}</span>
@@ -297,7 +368,9 @@ export default function RadarMap({ home, radiusMi, onRadiusChange, flights, sele
                       <span>{to}</span>
                     </div>
                     <div className="tooltip__meta">
-                      <span>{f.altitudeFt === null ? "—" : `${f.altitudeFt.toLocaleString("en-US")} ft`}</span>
+                      <span>
+                        {f.altitudeFt === null ? "—" : `${f.altitudeFt.toLocaleString("en-US")} ft`}
+                      </span>
                       <span>{f.speedKt === null ? "—" : `${f.speedKt} kt`}</span>
                       <span>Click to pin</span>
                     </div>
@@ -339,10 +412,22 @@ export default function RadarMap({ home, radiusMi, onRadiusChange, flights, sele
             )}
           </div>
           <div className="map-zoom" data-no-pan>
-            <button type="button" className="map-zoom__btn" aria-label="Zoom in" disabled={view.k >= MAX_ZOOM} onClick={() => zoomAt(1.5)}>
+            <button
+              type="button"
+              className="map-zoom__btn"
+              aria-label="Zoom in"
+              disabled={view.k >= MAX_ZOOM}
+              onClick={() => zoomAt(1.5)}
+            >
               <PlusIcon />
             </button>
-            <button type="button" className="map-zoom__btn" aria-label="Zoom out" disabled={view.k <= MIN_ZOOM} onClick={() => zoomAt(1 / 1.5)}>
+            <button
+              type="button"
+              className="map-zoom__btn"
+              aria-label="Zoom out"
+              disabled={view.k <= MIN_ZOOM}
+              onClick={() => zoomAt(1 / 1.5)}
+            >
               <MinusIcon />
             </button>
             <button
@@ -370,7 +455,9 @@ export default function RadarMap({ home, radiusMi, onRadiusChange, flights, sele
           </div>
           <div className="scale">
             <span className="scale__bar" style={{ width: barMi * pxPerMi }} />
-            <span>{fmtMi(barMi)} · adsb.lol (ODbL) · {TILE_ATTRIBUTION}</span>
+            <span>
+              {fmtMi(barMi)} · adsb.lol (ODbL) · {TILE_ATTRIBUTION}
+            </span>
           </div>
           {status && <div className="map-status">{status}</div>}
         </>

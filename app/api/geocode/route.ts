@@ -36,10 +36,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "We couldn't find that address." }, { status: 404 });
     }
     // Keep what the user typed as the label; Nominatim's display_name is long.
-    const body: GeocodeResponse = { address: q, lat: Number(results[0].lat), lon: Number(results[0].lon) };
+    const body: GeocodeResponse = {
+      address: q,
+      lat: Number(results[0].lat),
+      lon: Number(results[0].lon),
+    };
     cache.set(key, body);
     return NextResponse.json(body);
   } catch {
-    return NextResponse.json({ error: "Address lookup is unavailable right now." }, { status: 502 });
+    return NextResponse.json(
+      { error: "Address lookup is unavailable right now." },
+      { status: 502 },
+    );
   }
 }

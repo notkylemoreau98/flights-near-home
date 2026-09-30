@@ -14,14 +14,26 @@ interface Props {
   stale: boolean;
 }
 
-export default function Header({ home, onHomeChange, count, nearestMi, lowestFt, fetchedAt, stale }: Props) {
+export default function Header({
+  home,
+  onHomeChange,
+  count,
+  nearestMi,
+  lowestFt,
+  fetchedAt,
+  stale,
+}: Props) {
   return (
     <header className="header">
       <AddressEditor home={home} onSave={onHomeChange} />
       <div className="stats">
         <Stat label="In range" value={String(count)} unit="aircraft" />
         <Stat label="Nearest" value={nearestMi === null ? "—" : nearestMi.toFixed(1)} unit="mi" />
-        <Stat label="Lowest" value={lowestFt === null ? "—" : lowestFt.toLocaleString("en-US")} unit="ft" />
+        <Stat
+          label="Lowest"
+          value={lowestFt === null ? "—" : lowestFt.toLocaleString("en-US")}
+          unit="ft"
+        />
         <LiveStatus fetchedAt={fetchedAt} stale={stale} />
       </div>
     </header>
@@ -47,7 +59,12 @@ function LiveStatus({ fetchedAt, stale }: { fetchedAt: number | null; stale: boo
     return () => clearInterval(id);
   }, []);
   const ago = fetchedAt ? Math.max(0, Math.round((now - fetchedAt) / 1000)) : null;
-  const label = ago === null ? "Connecting…" : ago < 10 ? "Live" : `Updated ${ago < 90 ? `${ago}s` : `${Math.round(ago / 60)}m`} ago`;
+  const label =
+    ago === null
+      ? "Connecting…"
+      : ago < 10
+        ? "Live"
+        : `Updated ${ago < 90 ? `${ago}s` : `${Math.round(ago / 60)}m`} ago`;
   return (
     <div className="stat stat--live" aria-live="polite">
       <span className={`live-dot${stale ? " live-dot--stale" : ""}`} />

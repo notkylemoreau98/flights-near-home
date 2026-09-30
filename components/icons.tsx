@@ -32,7 +32,15 @@ export const PencilIcon = (p: SVGProps<SVGSVGElement>) => (
 );
 
 export const PinIcon = (p: SVGProps<SVGSVGElement>) => (
-  <svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true" {...stroke} strokeWidth={3} {...p}>
+  <svg
+    width="10"
+    height="10"
+    viewBox="0 0 24 24"
+    aria-hidden="true"
+    {...stroke}
+    strokeWidth={3}
+    {...p}
+  >
     <path d="M12 17v5" />
     <path d="M9 3h6l-1 7 4 4H6l4-4z" />
   </svg>

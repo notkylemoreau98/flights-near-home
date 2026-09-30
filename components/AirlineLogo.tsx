@@ -24,7 +24,11 @@ export default function AirlineLogo({ iata, callsign }: { iata: string | null; c
     );
   }
   return (
-    <span className="logo" style={{ background: fallback?.color ?? "#3a3f47", color: fallback?.ink ?? "#fff" }} aria-hidden="true">
+    <span
+      className="logo"
+      style={{ background: fallback?.color ?? "#3a3f47", color: fallback?.ink ?? "#fff" }}
+      aria-hidden="true"
+    >
       {code}
     </span>
   );

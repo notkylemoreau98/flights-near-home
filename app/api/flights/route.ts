@@ -20,10 +20,17 @@ function routeFits(lat: number, lon: number, route: Route): boolean {
   const { origin: a, destination: b } = route;
   if (a?.lat == null || a.lon == null || b?.lat == null || b.lon == null) return false;
   const here = { lat, lon };
-  if (haversineMi(lat, lon, a.lat, a.lon) <= NEAR_AIRPORT_MI || haversineMi(lat, lon, b.lat, b.lon) <= NEAR_AIRPORT_MI) {
+  if (
+    haversineMi(lat, lon, a.lat, a.lon) <= NEAR_AIRPORT_MI ||
+    haversineMi(lat, lon, b.lat, b.lon) <= NEAR_AIRPORT_MI
+  ) {
     return true;
   }
-  const { crossTrack, alongTrack, length } = pathPosition(here, { lat: a.lat, lon: a.lon }, { lat: b.lat, lon: b.lon });
+  const { crossTrack, alongTrack, length } = pathPosition(
+    here,
+    { lat: a.lat, lon: a.lon },
+    { lat: b.lat, lon: b.lon },
+  );
   const corridor = Math.min(MAX_CORRIDOR_MI, Math.max(MIN_CORRIDOR_MI, length * 0.1));
   return crossTrack <= corridor && alongTrack >= 0 && alongTrack <= length;
 }
@@ -98,7 +105,9 @@ export async function GET(req: NextRequest) {
       {
         icao24: a.icao24,
         callsign: a.callsign || fallbackId,
-        flightNumber: a.callsign ? displayFlightNumber(a.callsign, route?.flightNumber) : fallbackId,
+        flightNumber: a.callsign
+          ? displayFlightNumber(a.callsign, route?.flightNumber)
+          : fallbackId,
         airlineName: route?.airlineName ?? fallback?.name ?? null,
         airlineIata: route?.airlineIata ?? fallback?.iata ?? null,
         lat: a.lat!,
