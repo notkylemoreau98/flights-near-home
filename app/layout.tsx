@@ -7,11 +7,13 @@ const sora = Sora({
   weight: ["400", "500", "600", "700"],
   variable: "--font-display",
 });
+
 const plexSans = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-body",
 });
+
 const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
