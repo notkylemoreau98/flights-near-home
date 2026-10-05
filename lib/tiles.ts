@@ -36,10 +36,14 @@ export function tilesFor(
   w: number,
   h: number,
 ): MapTile[] {
-  if (pxPerMi <= 0 || w <= 0 || h <= 0) return [];
+  if (pxPerMi <= 0 || w <= 0 || h <= 0) {
+    return [];
+  }
+
   const exactZ = Math.log2(
     (pxPerMi * EARTH_CIRCUMFERENCE_MI * Math.cos((lat * Math.PI) / 180)) / TILE,
   );
+
   const z = Math.min(MAX_ZOOM, Math.max(1, Math.round(exactZ)));
   const k = 2 ** (exactZ - z); // css px per native tile px
   const size = TILE * k;

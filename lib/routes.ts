@@ -49,11 +49,21 @@ async function fetchRoute(callsign: string): Promise<Route | null> {
     cache: "no-store",
     signal: AbortSignal.timeout(5000),
   });
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`adsbdb ${res.status}`);
+
+  if (res.status === 404) {
+    return null;
+  }
+
+  if (!res.ok) {
+    throw new Error(`adsbdb ${res.status}`);
+  }
+
   const json = (await res.json()) as AdsbdbResponse;
   const fr = typeof json.response === "object" ? json.response.flightroute : undefined;
-  if (!fr) return null;
+
+  if (!fr) {
+    return null;
+  }
 
   const iata = fr.callsign_iata ?? null;
   return {
@@ -67,11 +77,19 @@ async function fetchRoute(callsign: string): Promise<Route | null> {
 }
 
 export async function lookupRoute(callsign: string): Promise<Route | null> {
-  if (!callsign) return null;
+  if (!callsign) {
+    return null;
+  }
+
   const hit = cache.get(callsign);
-  if (hit && hit.expiresAt > Date.now()) return hit.route;
+  if (hit && hit.expiresAt > Date.now()) {
+    return hit.route;
+  }
+
   const pending = inflight.get(callsign);
-  if (pending) return pending;
+  if (pending) {
+    return pending;
+  }
 
   const p = fetchRoute(callsign)
     .then((route) => {
@@ -80,6 +98,8 @@ export async function lookupRoute(callsign: string): Promise<Route | null> {
     })
     .catch(() => null) // don't cache transient errors
     .finally(() => inflight.delete(callsign));
+
   inflight.set(callsign, p);
+
   return p;
 }

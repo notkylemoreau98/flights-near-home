@@ -54,15 +54,21 @@ const num = (v: unknown) => (typeof v === "number" && Number.isFinite(v) ? v : n
 /** All aircraft within `radiusMi` of a point. */
 export async function getAircraft(lat: number, lon: number, radiusMi: number): Promise<Aircraft[]> {
   const nm = Math.min(MAX_RADIUS_NM, Math.ceil(radiusMi * NM_PER_MI));
+
   const res = await fetch(`${API}/point/${lat.toFixed(4)}/${lon.toFixed(4)}/${nm}`, {
     headers: { Accept: "application/json", "User-Agent": "flights-near-home/1.0" },
     cache: "no-store",
     signal: AbortSignal.timeout(10_000),
   });
-  if (!res.ok) throw new AdsbError(`adsb.lol request failed (${res.status})`, res.status);
+
+  if (!res.ok) {
+    throw new AdsbError(`adsb.lol request failed (${res.status})`, res.status);
+  }
 
   const json = (await res.json()) as { now?: number; ac?: ReadsbAircraft[] };
+
   const nowSec = (json.now ?? Date.now()) / 1000;
+
   return (json.ac ?? []).map((a) => ({
     icao24: a.hex.replace(/^~/, ""), // "~" marks non-ICAO (TIS-B) addresses
     callsign: a.flight?.trim() ?? "",
